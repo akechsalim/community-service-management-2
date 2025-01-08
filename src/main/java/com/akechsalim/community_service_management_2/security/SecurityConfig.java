@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
 //                        .requestMatchers("/api/auth/**").permitAll()
 //                        .anyRequest().authenticated()
+//                                .requestMatchers()
                         )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
