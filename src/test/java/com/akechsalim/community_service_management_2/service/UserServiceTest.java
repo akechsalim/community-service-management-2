@@ -7,19 +7,19 @@ import com.akechsalim.community_service_management_2.model.User;
 import com.akechsalim.community_service_management_2.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     @Mock
@@ -33,7 +33,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+//        userService = new UserService(userRepository, passwordEncoder);
     }
 
     @Test
@@ -48,9 +48,11 @@ class UserServiceTest {
 
         UserDTO userDTO = userService.createUser(dto);
 
-        assertThat(userDTO.getId()).isEqualTo(1L);
-        assertThat(userDTO.getUsername()).isEqualTo("testuser");
-        assertThat(userDTO.getRole()).isEqualTo(Role.VOLUNTEER);
+        assertEquals(1L, userDTO.getId());
+        assertEquals("testuser", userDTO.getUsername());
+        assertEquals(Role.VOLUNTEER, userDTO.getRole());
+
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -62,13 +64,26 @@ class UserServiceTest {
     }
 
     @Test
+    void testFindByUsername() {
+        User user = new User("testuser", "password", Role.VOLUNTEER);
+        user.setId(1L);
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        UserDTO userDTO = userService.findByUsername("testuser");
+
+        assertEquals(1L, userDTO.getId());
+        assertEquals("testuser", userDTO.getUsername());
+        assertEquals(Role.VOLUNTEER, userDTO.getRole());
+    }
+
+    @Test
     void testValidateUserValidCredentials() {
         User user = new User("testuser", "encodedPassword", Role.VOLUNTEER);
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password", "encodedPassword")).thenReturn(true);
 
         User validatedUser = userService.validateUser("testuser", "password");
-        assertThat(validatedUser.getUsername()).isEqualTo("testuser");
+        assertEquals("testuser", validatedUser.getUsername());
     }
 
     @Test

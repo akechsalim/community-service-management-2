@@ -1,6 +1,13 @@
 package com.akechsalim.community_service_management_2.model;
 
-public enum Role {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Role implements GrantedAuthority {
     ADMIN,
-    VOLUNTEER
+    VOLUNTEER;
+
+    @Override
+    public String getAuthority() {
+        return "ROLE_" + name(); // Prefixes the enum name with "ROLE_"
+    }
 }

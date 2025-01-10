@@ -4,13 +4,19 @@ import com.akechsalim.community_service_management_2.dto.UserDTO;
 import com.akechsalim.community_service_management_2.dto.UserRegisterDTO;
 import com.akechsalim.community_service_management_2.model.User;
 import com.akechsalim.community_service_management_2.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.akechsalim.community_service_management_2.security.CustomUserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -18,6 +24,12 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        return new CustomUserDetails(user);
     }
 
     @Transactional
@@ -37,6 +49,10 @@ public class UserService {
         return convertToDTO(userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username)));
     }
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
     public User validateUser(String username, String password) {
         User user = userRepository.findByUsername(username)
@@ -45,6 +61,13 @@ public class UserService {
             throw new IllegalArgumentException("Invalid credentials");
         }
         return user;
+    }
+    @Transactional
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
     }
 
     private UserDTO convertToDTO(User user) {
