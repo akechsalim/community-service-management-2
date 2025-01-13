@@ -1,5 +1,6 @@
 package com.akechsalim.community_service_management_2.security;
 
+import com.akechsalim.community_service_management_2.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +48,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/events/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/events/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/events/**").authenticated() // Require authentication for write actions
+                        //
+                        .requestMatchers(HttpMethod.GET,"/api/tasks/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/tasks/**").hasRole("VOLUNTEER")
+
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers("/api/tasks/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_VOLUNTEER")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -63,6 +72,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*")); // Allow all headers
         configuration.setAllowCredentials(true);
+        configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

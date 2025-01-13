@@ -1,16 +1,21 @@
 package com.akechsalim.community_service_management_2.security;
 
+import com.akechsalim.community_service_management_2.model.Role;
 import com.akechsalim.community_service_management_2.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
+    private String username;
     private final User user;
+    private Role role;
 
     public CustomUserDetails(User user) {
         this.user = user;
@@ -18,7 +23,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(user.getRole()); // If using CustomUserDetails, or directly user.getRole() if User implements UserDetails
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+
     }
 
     @Override
