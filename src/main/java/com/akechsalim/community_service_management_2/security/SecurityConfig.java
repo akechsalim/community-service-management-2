@@ -18,7 +18,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
-
 import java.util.List;
 
 @Configuration
@@ -36,29 +35,38 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptionHandling-> exceptionHandling
+
+                // Configure exception handling for authentication
+                .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(authenticationEntryPoint))
+
+                // Define access rules for different HTTP requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/user").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN") // Only admins can GET all users
+                        // Public endpoints for registration and login
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/user").permitAll()
+
+                        // Admin-only operations on users
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll() // Allow GET requests to events
+
+                        // Public read access to events, authentication required for write operations
+                        .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/events/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/events/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/events/**").authenticated() // Require authentication for write actions
-                        //
-                        .requestMatchers(HttpMethod.GET,"/api/tasks/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/api/tasks/**").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/events/**").authenticated()
 
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-
+                        // Access control for tasks and admin routes
                         .requestMatchers("/api/tasks/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_VOLUNTEER")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
+                        // Require authentication for any request not explicitly defined above
                         .anyRequest().authenticated()
                 )
+
+                // Enable CORS with custom configuration
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Add JWT filter before Spring's UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
         ;
 

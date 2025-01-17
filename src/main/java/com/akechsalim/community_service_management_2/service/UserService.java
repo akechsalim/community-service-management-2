@@ -2,6 +2,7 @@ package com.akechsalim.community_service_management_2.service;
 
 import com.akechsalim.community_service_management_2.dto.UserDTO;
 import com.akechsalim.community_service_management_2.dto.UserRegisterDTO;
+import com.akechsalim.community_service_management_2.model.Role;
 import com.akechsalim.community_service_management_2.model.User;
 import com.akechsalim.community_service_management_2.repository.UserRepository;
 import com.akechsalim.community_service_management_2.security.CustomUserDetails;
@@ -68,6 +69,12 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+    public List<UserDTO> getVolunteers() {
+        List<User> volunteers = userRepository.findByRole(Role.VOLUNTEER);
+        return volunteers.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     private UserDTO convertToDTO(User user) {
