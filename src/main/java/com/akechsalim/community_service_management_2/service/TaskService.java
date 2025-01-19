@@ -33,6 +33,9 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
         return convertToDTO(savedTask);
     }
+    public List<Task> getTasksByVolunteerId(Long volunteerId) {
+        return taskRepository.findByVolunteerId(volunteerId);
+    }
 
     @Transactional
     public TaskDTO updateTask(Long id, TaskDTO taskDTO) {
@@ -54,6 +57,12 @@ public class TaskService {
         return taskRepository.findByVolunteerId(volunteerId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+    @Transactional
+    public void completeTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        taskRepository.delete(task);
     }
 
     private TaskDTO convertToDTO(Task task) {
