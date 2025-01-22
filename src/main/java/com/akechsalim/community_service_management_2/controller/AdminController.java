@@ -29,22 +29,37 @@ public class AdminController {
         List<UserWithTasksDTO> volunteers = userService.getVolunteersWithTasks();
         return ResponseEntity.ok(volunteers);
     }
+
     @PostMapping("/tasks")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TaskDTO> assignTaskToVolunteer(@RequestBody TaskDTO taskDTO) {
         TaskDTO assignedTask = taskService.createTask(taskDTO);
         return ResponseEntity.ok(assignedTask);
     }
+
     @GetMapping("/available-volunteers")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserDTO>> getAvailableVolunteers() {
         List<UserDTO> availableVolunteers = userService.getAvailableVolunteers();
         return ResponseEntity.ok(availableVolunteers);
     }
+
     @PostMapping("/tasks/{taskId}/complete")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> completeTask(@PathVariable Long taskId) {
         taskService.completeTask(taskId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/sponsors")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<UserDTO>> getSponsors() {
+        return ResponseEntity.ok(userService.getSponsors());
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<UserDTO>> searchUsers(@RequestParam String searchTerm) {
+        return ResponseEntity.ok(userService.searchUsers(searchTerm));
     }
 }

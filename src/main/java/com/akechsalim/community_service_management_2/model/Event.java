@@ -3,6 +3,7 @@ package com.akechsalim.community_service_management_2.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -27,6 +28,9 @@ public class Event {
 
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Sponsorship> sponsorships;
 
     public Event() {
     }

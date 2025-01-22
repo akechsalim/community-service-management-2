@@ -108,8 +108,18 @@ public class UserService implements UserDetailsService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    @Transactional(readOnly = true)
+    public List<UserDTO> getSponsors() {
+        return userRepository.findByRole(Role.SPONSOR).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
     private List<User> findByRoleAndNoTasksOrPendingTasks(Role role) {
         return userRepository.findByRoleAndNoTasksOrPendingTasks(role);
+    }
+    public List<UserDTO> searchUsers(String searchTerm) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(searchTerm);
+        return users.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     private UserDTO convertToDTO(User user) {

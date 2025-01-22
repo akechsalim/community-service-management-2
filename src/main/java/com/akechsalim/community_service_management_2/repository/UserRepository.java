@@ -11,7 +11,12 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
+
     List<User> findByRole(Role role);
+
     @Query("SELECT u FROM User u WHERE u.role = :role AND (SELECT COUNT(t) FROM Task t WHERE t.volunteer = u AND t.status != 'PENDING') = 0")
     List<User> findByRoleAndNoTasksOrPendingTasks(@Param("role") Role role);
+
+    List<User> findByUsernameContainingIgnoreCase(String username);
+
 }

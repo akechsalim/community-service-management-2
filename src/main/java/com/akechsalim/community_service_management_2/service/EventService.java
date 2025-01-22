@@ -2,20 +2,32 @@ package com.akechsalim.community_service_management_2.service;
 
 import com.akechsalim.community_service_management_2.dto.EventDTO;
 import com.akechsalim.community_service_management_2.model.Event;
+import com.akechsalim.community_service_management_2.model.Sponsorship;
+import com.akechsalim.community_service_management_2.model.User;
 import com.akechsalim.community_service_management_2.repository.EventRepository;
+import com.akechsalim.community_service_management_2.repository.SponsorshipRepository;
+import com.akechsalim.community_service_management_2.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final SponsorshipRepository sponsorshipRepository;
+    private final UserRepository userRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, SponsorshipRepository sponsorshipRepository, UserRepository userRepository) {
         this.eventRepository = eventRepository;
+        this.sponsorshipRepository = sponsorshipRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -57,5 +69,33 @@ public class EventService {
 
     private Event convertToEntity(EventDTO dto) {
         return new Event(dto.getName(), dto.getDescription(), dto.getLocation(), dto.getStartTime(), dto.getEndTime());
+    }
+    private Optional<User> getCurrentSponsor() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            return userRepository.findByUsername(username); // Assuming findByUsername returns Optional<User>
+        } else {
+            String username = principal.toString();
+            return userRepository.findByUsername(username);
+        }
+    }
+    @Transactional
+    public void sponsorEvent(Long eventId, Double amount) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+
+        Optional<User> sponsorOptional = getCurrentSponsor();
+        User sponsor = sponsorOptional.orElseThrow(() -> new RuntimeException("Current sponsor not found"));
+
+        Sponsorship sponsorship = new Sponsorship();
+        sponsorship.setEvent(event);
+        sponsorship.setSponsor(sponsor);
+        sponsorship.setAmount(amount);
+        sponsorshipRepository.save(sponsorship);
+    }
+
+    public List<Sponsorship> getSponsorshipsBySponsor(Long sponsorId) {
+        return sponsorshipRepository.findBySponsorId(sponsorId);
     }
 }
