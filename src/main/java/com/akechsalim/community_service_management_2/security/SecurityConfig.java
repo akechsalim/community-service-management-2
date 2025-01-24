@@ -59,6 +59,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/tasks/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_VOLUNTEER")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
+                        .requestMatchers(HttpMethod.POST, "/api/contact/**").permitAll()
+
                         // Require authentication for any request not explicitly defined above
                         .anyRequest().authenticated()
                 )

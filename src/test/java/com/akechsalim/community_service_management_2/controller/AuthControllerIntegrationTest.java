@@ -1,5 +1,6 @@
 package com.akechsalim.community_service_management_2.controller;
 
+import com.akechsalim.community_service_management_2.dto.UserLoginDTO;
 import com.akechsalim.community_service_management_2.dto.UserRegisterDTO;
 import com.akechsalim.community_service_management_2.model.Role;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -6,14 +6,16 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String username;
+
     private String password;
+
     @Column(name = "role", length = 50)
     @Enumerated(EnumType.STRING)
     private Role role;

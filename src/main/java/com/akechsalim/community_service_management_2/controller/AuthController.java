@@ -1,6 +1,6 @@
 package com.akechsalim.community_service_management_2.controller;
 
-import com.akechsalim.community_service_management_2.dto.UserDTO;
+import com.akechsalim.community_service_management_2.dto.UserLoginDTO;
 import com.akechsalim.community_service_management_2.dto.UserRegisterDTO;
 import com.akechsalim.community_service_management_2.model.User;
 import com.akechsalim.community_service_management_2.security.JwtTokenManager;
@@ -48,31 +48,3 @@ public class AuthController {
     }
 }
 
-class UserLoginDTO {
-    private String username;
-    private String password;
-
-    public UserLoginDTO() {
-    }
-
-    public UserLoginDTO(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-}
