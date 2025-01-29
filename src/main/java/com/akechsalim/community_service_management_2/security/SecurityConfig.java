@@ -59,6 +59,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/tasks/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_VOLUNTEER")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
+                        //Access control for Training modules
+                        .requestMatchers(HttpMethod.POST,"/api/training-modules/**").authenticated()
+
                         .requestMatchers(HttpMethod.POST, "/api/contact/**").permitAll()
 
                         // Require authentication for any request not explicitly defined above
