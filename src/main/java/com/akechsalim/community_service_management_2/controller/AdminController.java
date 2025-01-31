@@ -3,7 +3,9 @@ package com.akechsalim.community_service_management_2.controller;
 import com.akechsalim.community_service_management_2.dto.TaskDTO;
 import com.akechsalim.community_service_management_2.dto.UserDTO;
 import com.akechsalim.community_service_management_2.dto.UserWithTasksDTO;
+import com.akechsalim.community_service_management_2.model.TrainingProgress;
 import com.akechsalim.community_service_management_2.service.TaskService;
+import com.akechsalim.community_service_management_2.service.TrainingProgressService;
 import com.akechsalim.community_service_management_2.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,10 +19,12 @@ public class AdminController {
 
     private final UserService userService;
     private final TaskService taskService;
+    private TrainingProgressService trainingProgressService;
 
-    public AdminController(UserService userService, TaskService taskService) {
+    public AdminController(UserService userService, TaskService taskService,TrainingProgressService trainingProgressService) {
         this.userService = userService;
         this.taskService = taskService;
+        this.trainingProgressService = trainingProgressService;
     }
 
     @GetMapping("/volunteers")
@@ -61,5 +65,10 @@ public class AdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserDTO>> searchUsers(@RequestParam String searchTerm) {
         return ResponseEntity.ok(userService.searchUsers(searchTerm));
+    }
+    @GetMapping("/dashboard/volunteer-progress")
+    public ResponseEntity<List<TrainingProgress>> getVolunteerProgress() {
+        List<TrainingProgress> progress = trainingProgressService.getAllProgress();
+        return ResponseEntity.ok(progress);
     }
 }

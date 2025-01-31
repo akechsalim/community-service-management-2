@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TrainingProgressService {
@@ -43,5 +44,15 @@ public class TrainingProgressService {
 
     public List<TrainingProgress> getProgressByVolunteer(Long volunteerId) {
         return trainingProgressRepository.findByVolunteerId(volunteerId);
+    }
+    public List<TrainingProgress> getProgressByModule(Long moduleId) {
+        return trainingProgressRepository.findByModuleId(moduleId);
+    }
+
+    public Optional<TrainingProgress> getProgressByVolunteerAndModule(Long volunteerId, Long moduleId) {
+        return trainingProgressRepository.findByVolunteerIdAndModuleId(volunteerId, moduleId);
+    }
+    public List<TrainingProgress> getAllProgress() {
+        return trainingProgressRepository.findAll();
     }
 }
