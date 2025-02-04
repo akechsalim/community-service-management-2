@@ -21,15 +21,17 @@ public class TrainingProgress {
 
     private boolean completed;
     private LocalDateTime completedAt;
+    private boolean certificateApproved;
 
     public TrainingProgress() {
     }
 
-    public TrainingProgress(User volunteer, TrainingModule module, boolean completed, LocalDateTime completedAt) {
+    public TrainingProgress(User volunteer, TrainingModule module, boolean completed, LocalDateTime completedAt, boolean certificateApproved) {
         this.volunteer = volunteer;
         this.module = module;
         this.completed = completed;
         this.completedAt = completedAt;
+        this.certificateApproved = certificateApproved;
     }
 
     public Long getId() {
@@ -70,5 +72,13 @@ public class TrainingProgress {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public boolean isCertificateApproved() {
+        return certificateApproved;
+    }
+
+    public void setCertificateApproved(boolean certificateApproved) {
+        this.certificateApproved = certificateApproved;
     }
 }

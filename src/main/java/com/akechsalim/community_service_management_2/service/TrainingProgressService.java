@@ -55,4 +55,10 @@ public class TrainingProgressService {
     public List<TrainingProgress> getAllProgress() {
         return trainingProgressRepository.findAll();
     }
+    public TrainingProgress approveCertificateDownload(Long progressId) {
+        TrainingProgress progress = trainingProgressRepository.findById(progressId)
+                .orElseThrow(() -> new RuntimeException("Progress not found with ID: " + progressId));
+        progress.setCertificateApproved(true);
+        return trainingProgressRepository.save(progress);
+    }
 }

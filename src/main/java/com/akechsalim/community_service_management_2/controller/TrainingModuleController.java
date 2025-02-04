@@ -37,4 +37,33 @@ public class TrainingModuleController {
         List<TrainingModule> modules = trainingModuleService.getAllTrainingModules();
         return ResponseEntity.ok(modules);
     }
+    @GetMapping("/{moduleId}")
+    public ResponseEntity<TrainingModule> getTrainingModuleById(@PathVariable Long moduleId) {
+        TrainingModule module = trainingModuleService.getTrainingModuleById(moduleId);
+        return ResponseEntity.ok(module);
+    }
+
+    @PutMapping("/{moduleId}")
+    public ResponseEntity<TrainingModule> updateTrainingModule(
+            @PathVariable Long moduleId,
+            @RequestBody TrainingModuleDTO trainingModuleDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            throw new IllegalArgumentException("User not authenticated.");
+        }
+        User loggedInUser = userDetails.getUser(); // Extract User entity
+        TrainingModule updatedModule = trainingModuleService.updateTrainingModule(moduleId, trainingModuleDTO, loggedInUser);
+        return ResponseEntity.ok(updatedModule);
+    }
+
+    @DeleteMapping("/{moduleId}")
+    public ResponseEntity<Void> deleteTrainingModule(
+            @PathVariable Long moduleId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (userDetails == null) {
+            throw new IllegalArgumentException("User not authenticated.");
+        }
+        trainingModuleService.deleteTrainingModule(moduleId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -19,7 +19,7 @@ public class AdminController {
 
     private final UserService userService;
     private final TaskService taskService;
-    private TrainingProgressService trainingProgressService;
+    private final TrainingProgressService trainingProgressService;
 
     public AdminController(UserService userService, TaskService taskService,TrainingProgressService trainingProgressService) {
         this.userService = userService;

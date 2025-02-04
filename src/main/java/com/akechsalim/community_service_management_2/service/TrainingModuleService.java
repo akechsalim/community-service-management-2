@@ -38,4 +38,31 @@ public class TrainingModuleService {
     public List<TrainingModule> getAllTrainingModules() {
         return trainingModuleRepository.findAll();
     }
+
+    public TrainingModule getTrainingModuleById(Long moduleId) {
+        return trainingModuleRepository.findById(moduleId)
+                .orElseThrow(() -> new RuntimeException("Training module not found with ID: " + moduleId));
+    }
+
+    public TrainingModule updateTrainingModule(Long moduleId, TrainingModuleDTO trainingModuleDTO, User updatedBy) {
+        TrainingModule existingModule = trainingModuleRepository.findById(moduleId)
+                .orElseThrow(() -> new RuntimeException("Training module not found with ID: " + moduleId));
+
+        existingModule.setTitle(trainingModuleDTO.getTitle());
+        existingModule.setDescription(trainingModuleDTO.getDescription());
+        existingModule.setContent(trainingModuleDTO.getContent());
+        existingModule.setResourceUrl(trainingModuleDTO.getResourceUrl());
+        existingModule.setVideoUrl(trainingModuleDTO.getVideoUrl());
+        existingModule.setUpdatedAt(LocalDateTime.now());
+        existingModule.setCreatedBy(updatedBy); // Optional: Update the creator if needed
+
+        return trainingModuleRepository.save(existingModule);
+    }
+
+    public void deleteTrainingModule(Long moduleId) {
+        if (!trainingModuleRepository.existsById(moduleId)) {
+            throw new RuntimeException("Training module not found with ID: " + moduleId);
+        }
+        trainingModuleRepository.deleteById(moduleId);
+    }
 }
