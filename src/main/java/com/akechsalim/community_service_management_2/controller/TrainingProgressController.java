@@ -28,4 +28,9 @@ public class TrainingProgressController {
         List<TrainingProgress> progress = trainingProgressService.getProgressByVolunteer(volunteerId);
         return ResponseEntity.ok(progress);
     }
+    @PutMapping("/progress/{progressId}/approve-certificate")
+    public ResponseEntity<TrainingProgress> approveCertificateDownload(@PathVariable Long progressId) {
+        TrainingProgress progress = trainingProgressService.approveCertificateDownload(progressId);
+        return ResponseEntity.ok(progress);
+    }
 }
