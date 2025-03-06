@@ -6,6 +6,7 @@ import com.akechsalim.community_service_management_2.dto.UserRegisterDTO;
 import com.akechsalim.community_service_management_2.dto.UserWithTasksDTO;
 import com.akechsalim.community_service_management_2.model.Role;
 import com.akechsalim.community_service_management_2.model.User;
+import com.akechsalim.community_service_management_2.repository.AdminEmailRepository;
 import com.akechsalim.community_service_management_2.repository.UserRepository;
 import com.akechsalim.community_service_management_2.security.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,13 +23,19 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final AdminEmailRepository adminEmailRepository;
     private final PasswordEncoder passwordEncoder;
     private final TaskService taskService;
+    private final EmailService emailService;
+    private final OtpService otpService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, TaskService taskService) {
+    public UserService(UserRepository userRepository, AdminEmailRepository adminEmailRepository, PasswordEncoder passwordEncoder, TaskService taskService, EmailService emailService, OtpService otpService) {
         this.userRepository = userRepository;
+        this.adminEmailRepository = adminEmailRepository;
         this.passwordEncoder = passwordEncoder;
         this.taskService = taskService;
+        this.emailService = emailService;
+        this.otpService = otpService;
     }
 
     @Override
@@ -94,7 +101,7 @@ public class UserService implements UserDetailsService {
                                     task.getTitle(),
                                     task.getDescription(),
                                     task.getStatus(),
-                                    task.getVolunteer().getId() // Assuming you want to include volunteerId in TaskDTO
+                                    task.getVolunteer().getId() 
                             ))
                             .collect(Collectors.toList()));
                     return dto;
