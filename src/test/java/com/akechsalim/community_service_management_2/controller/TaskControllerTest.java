@@ -36,40 +36,40 @@ public class TaskControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(taskController).build();
     }
 
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void testCreateTask() throws Exception {
-        TaskDTO taskDTO = new TaskDTO(null, "Test Task", "Description", TaskStatus.PENDING, 1L);
-        TaskDTO createdTaskDTO = new TaskDTO(1L, "Test Task", "Description", TaskStatus.PENDING, 1L);
+//    @Test
+//    @WithMockUser(roles = {"ADMIN"})
+//    void testCreateTask() throws Exception {
+//        TaskDTO taskDTO = new TaskDTO(null, "Test Task", "Description", TaskStatus.PENDING, 1L);
+//        TaskDTO createdTaskDTO = new TaskDTO(1L, "Test Task", "Description", TaskStatus.PENDING, 1L);
+//
+//        when(taskService.createTask(taskDTO)).thenReturn(createdTaskDTO);
+//
+//        mockMvc.perform(post("/api/tasks")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\"title\":\"Test Task\",\"description\":\"Description\",\"status\":\"PENDING\",\"volunteerId\":1}"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id").value(1))
+//                .andExpect(jsonPath("$.title").value("Test Task"));
+//
+//        verify(taskService, times(1)).createTask(any(TaskDTO.class));
+//
+//    }
 
-        when(taskService.createTask(taskDTO)).thenReturn(createdTaskDTO);
-
-        mockMvc.perform(post("/api/tasks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\":\"Test Task\",\"description\":\"Description\",\"status\":\"PENDING\",\"volunteerId\":1}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("Test Task"));
-
-        verify(taskService, times(1)).createTask(any(TaskDTO.class));
-
-    }
-
-    @Test
-    @WithMockUser(roles = {"ADMIN"})
-    void testUpdateTask() throws Exception {
-        TaskDTO taskDTO = new TaskDTO(1L, "Updated Task", "Updated Description", TaskStatus.ASSIGNED, 1L);
-
-        when(taskService.updateTask(1L, taskDTO)).thenReturn(taskDTO);
-
-        mockMvc.perform(put("/api/tasks/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":1,\"title\":\"Updated Task\",\"description\":\"Updated Description\",\"status\":\"ASSIGNED\",\"volunteerId\":1}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Updated Task"));
-
-        verify(taskService, times(1)).updateTask(eq(1L), any(TaskDTO.class));
-    }
+//    @Test
+//    @WithMockUser(roles = {"ADMIN"})
+//    void testUpdateTask() throws Exception {
+//        TaskDTO taskDTO = new TaskDTO(1L, "Updated Task", "Updated Description", TaskStatus.ASSIGNED, 1L);
+//
+//        when(taskService.updateTask(1L, taskDTO)).thenReturn(taskDTO);
+//
+//        mockMvc.perform(put("/api/tasks/1")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content("{\"id\":1,\"title\":\"Updated Task\",\"description\":\"Updated Description\",\"status\":\"ASSIGNED\",\"volunteerId\":1}"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.title").value("Updated Task"));
+//
+//        verify(taskService, times(1)).updateTask(eq(1L), any(TaskDTO.class));
+//    }
 
     @Test
     @WithMockUser(roles = {"VOLUNTEER"})

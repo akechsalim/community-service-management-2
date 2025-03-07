@@ -41,7 +41,7 @@ public class SecurityConfig {
                 // Define access rules for different HTTP requests
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints for registration and login
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/user").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/user","/api/auth/verify-otp").permitAll()
 
                         // Admin-only operations on users
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")

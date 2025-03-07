@@ -32,6 +32,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
+        System.out.println("Received DTO: " + userRegisterDTO); // Debug log
         userService.createUser(userRegisterDTO);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "User registered successfully. Please check your email for OTP.");
@@ -44,7 +45,7 @@ public class AuthController {
         String otp = otpRequest.get("otp");
 
         if (otpService.verifyOtp(email, otp)) {
-            User user = userService.loadUserByUsername(userService.userRepository.findByEmail(email).get().getUsername());
+            User user = userService.findByEmail(email);
             String token = jwtTokenManager.generateToken(userService.loadUserByUsername(user.getUsername()));
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
