@@ -10,7 +10,7 @@ import java.util.List;
 public class DtoMapper {
 
     public static UserDTO toUserDTO(User user) {
-        return new UserDTO(user.getId(), user.getUsername(), user.getRole());
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 
     public static UserWithTasksDTO toUserWithTasksDTO(User user, List<TaskDTO> tasks) {

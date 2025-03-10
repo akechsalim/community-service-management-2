@@ -105,6 +105,7 @@ public class UserService implements UserDetailsService {
         User user = findUserByUsernameOrThrow(username);
         return DtoMapper.toUserDTO(user);
     }
+
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
@@ -163,6 +164,28 @@ public class UserService implements UserDetailsService {
             throw new UserNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    // Profile management methods
+    @Transactional
+    public void updateProfile(String currentUsername, String newUsername, String email) {
+        User user = findUserByUsernameOrThrow(currentUsername);
+        if (!newUsername.equals(currentUsername) && existsByUsername(newUsername)) {
+            throw new UserAlreadyExistsException("Username " + newUsername + " is already taken.");
+        }
+        user.setUsername(newUsername);
+        user.setEmail(email);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updatePassword(String username, String currentPassword, String newPassword) {
+        User user = findUserByUsernameOrThrow(username);
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new InvalidCredentialsException("Current password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     // Helper method
