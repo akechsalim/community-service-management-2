@@ -2,6 +2,7 @@ package com.akechsalim.community_service_management_2.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +18,12 @@ public class User {
     private String email;
 
     private String password;
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
+    @Column(name = "token_expiry_date")
+    private LocalDateTime tokenExpiryDate;
 
     @Column(name = "role", length = 50)
     @Enumerated(EnumType.STRING)
@@ -57,6 +64,10 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    public String getResetPasswordToken() { return resetPasswordToken; }
+    public void setResetPasswordToken(String resetPasswordToken) { this.resetPasswordToken = resetPasswordToken; }
+    public LocalDateTime getTokenExpiryDate() { return tokenExpiryDate; }
+    public void setTokenExpiryDate(LocalDateTime tokenExpiryDate) { this.tokenExpiryDate = tokenExpiryDate; }
 
     public Role getRole() {
         return role;

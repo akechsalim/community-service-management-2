@@ -67,6 +67,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/contact/**").permitAll()
 
+                        .requestMatchers("/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
+
                         // Require authentication for any request not explicitly defined above
                         .anyRequest().authenticated()
                 )

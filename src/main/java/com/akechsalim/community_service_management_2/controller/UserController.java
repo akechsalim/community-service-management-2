@@ -2,7 +2,10 @@ package com.akechsalim.community_service_management_2.controller;
 
 import com.akechsalim.community_service_management_2.dto.PasswordUpdateDTO;
 import com.akechsalim.community_service_management_2.dto.UserDTO;
+import com.akechsalim.community_service_management_2.model.ForgotPasswordRequest;
+import com.akechsalim.community_service_management_2.model.ResetPasswordRequest;
 import com.akechsalim.community_service_management_2.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -68,4 +71,5 @@ public class UserController {
         );
         return ResponseEntity.ok().build();
     }
+
 }

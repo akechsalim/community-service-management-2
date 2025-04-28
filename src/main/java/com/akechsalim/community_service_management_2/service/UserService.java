@@ -13,6 +13,10 @@ import com.akechsalim.community_service_management_2.repository.AdminEmailReposi
 import com.akechsalim.community_service_management_2.repository.UserRepository;
 import com.akechsalim.community_service_management_2.security.CustomUserDetails;
 import com.akechsalim.community_service_management_2.util.DtoMapper;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,16 +38,19 @@ public class UserService implements UserDetailsService {
     private final TaskService taskService;
     private final EmailService emailService;
     private final OtpService otpService;
+    private final JavaMailSender mailSender;
+
 
     public UserService(UserRepository userRepository, AdminEmailRepository adminEmailRepository,
                        PasswordEncoder passwordEncoder, TaskService taskService,
-                       EmailService emailService, OtpService otpService) {
+                       EmailService emailService, OtpService otpService,JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.adminEmailRepository = adminEmailRepository;
         this.passwordEncoder = passwordEncoder;
         this.taskService = taskService;
         this.emailService = emailService;
         this.otpService = otpService;
+        this.mailSender = mailSender;
     }
 
     // Authentication-related methods
@@ -192,5 +201,52 @@ public class UserService implements UserDetailsService {
     private User findUserByUsernameOrThrow(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+    }
+
+    @Transactional
+    public void requestPasswordReset(String email) throws MessagingException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setTokenExpiryDate(LocalDateTime.now().plusHours(1));
+        userRepository.save(user);
+
+        sendResetEmail(user.getEmail(), token);
+    }
+
+    private void sendResetEmail(String to, String token) throws MessagingException {
+        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(to);
+        helper.setSubject("Password Reset Request");
+        helper.setText("""
+            <p>You requested a password reset. Click the link below to set a new password:</p>
+            <p><a href="%s">Reset Password</a></p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you didn't request this, please ignore this email.</p>
+            """.formatted(resetLink), true);
+
+        mailSender.send(message);
+    }
+
+    @Transactional
+    public boolean resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+
+        if (user.getTokenExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Token has expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetPasswordToken(null);
+        user.setTokenExpiryDate(null);
+        userRepository.save(user);
+
+        return true;
     }
 }
